@@ -6,16 +6,16 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["LoggerService/LoggerService.csproj", "LoggerService/"]
-RUN dotnet restore "LoggerService/LoggerService.csproj"
-COPY . .
-WORKDIR "/src/LoggerService"
-RUN dotnet build "LoggerService.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR /App
+COPY *.csproj ./
+RUN dotnet restore
+COPY . ./
+RUN dotnet build -c $BUILD_CONFIGURATION
+
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "LoggerService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "LoggerService.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 
 FROM base AS final
 WORKDIR /app
